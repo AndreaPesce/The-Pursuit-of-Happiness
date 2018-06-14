@@ -1,0 +1,805 @@
+---
+title: "La Ricerca della Felicità"
+output:
+  html_document:
+    theme: readable
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+>Posso dire una cosa? Sono il tipo di persona che se mi fate una domanda e non so qual è la risposta, vi dico chiaro e tondo che non la so, ma potete scomettere che so come trovarla una risposta e la troverò, la troverò la risposta - Will Smith, _Alla Ricerca della Felicità_
+
+1. Introduzione
+========================
+La felicità rappresenta il fine ultimo di ogni azione, di ogni scelta e di ogni pensiero dell’uomo. Siamo tutti costantemente alla ricerca della felicità. Essa può essere cercata nella carriera, nella casa, nella famiglia, nella religione, nelle passioni, ecc. Ma da dove deriva la felicità? Possiamo trovare il pozzo della felicità?
+
+
+Ormai da alcuni anni si svolge un'analisi sulla felicità in molti paesi e si stipula ogni anno un report sulla felicità denominato "*World Happiness Report*"" il quale sta avendo sempre più successo in ambiti decisionali nazionali e soprattutto in ambito politico, sociale, economico, ecc.
+
+
+Personalemtne ero partito con una domanda ben specifica: la religione incide sulla felicità della persona? Se la felicità non è data da qualcosa di immateriale e astratto come Dio, da cosa ci deriva la felicità?
+
+L'analisi cercherà quindi di rispondere alle seguenti domande:
+
+* Come si è evoluta la religione nel mondo e negli anni?
+
+* La religione incide sulla felicità? Quale religione rende più felici? Essere religiosi rende le persone più felici?
+
+* Cos'altro potrebbe incidere sulla fleicità?
+
+* Felicità e morte per suicidio: sono variabili dipendenti? E il suicidio con la religione?
+
+
+
+
+1.1 DataBase
+------------------------
+In tale analisi sono stati utilizzati 7 dataset. È utile analizzare i contenuti di tali dataset prima di iniziare l'analisi. 
+
+
+### 1.1.1 Religion National
+
+
+Tale dataset sarà utilizzato per analizzare la religiosità di alcune nazioni. Esso ha tali variabili:
+
+* *year* : anno di rilevazione dei dati. L'analisi è quinquinnale, quindi i dati sono strutturati in modo tale da avere le osservaizoni definite ogni cinque anni, dal 1945 al 2010.
+
+* *state* : Nome dello stato.
+
+* *code* : Codice identificativo per nazione.
+
+* *christianity_protestant,	christianity_romancatholic,	christianity_easternorthodox,	christianity_anglican,	christianity_other,	christianity_all,	judaism_orthodox,	judaism_conservative,	judaism_reform,	judaism_other,	judaism_all,	islam_sunni,	islam_shi’a,	islam_ibadhi,	islam_nationofislam,	islam_alawite,	islam_ahmadiyya,	islam_other,	islam_all,	buddhism_mahayana,	buddhism_theravada,	buddhism_other,	buddhism_all,	zoroastrianism_all,	hinduism_all,	sikhism_all,	shinto_all,	baha’i_all,	taoism_all,	jainism_all,	confucianism_all,	syncretism_all,	animism_all,	otherreligion_all* : queste variabili rappresentano il numero di credenti per tali credenze. Nelle analisi spesso ci soffermeremo solo sulle relgioni del tipo "*nomereligione_all*", in modo tale da soffermarci sulle famiglie di religione. 
+
+* *religion_all*: numero complessivo di credenti in ogni paese. Essa ha molti valori errati. Per questo motivo spesso sommeremo i valori assunti dalle variabili precedenti. Quindi eviteremo di usare tale variabile e non la eliminaremo per non togliere informazione.
+
+* *noreligion_all*: numero di non credenti per paese.
+
+* *population*: popolazione di ogni stato.
+
+* *protestant_percent,	romancatholic_percent,	easternorthodox_percent,	anglican_percent,	otherchristianity_percent,	christianity_percent,	orthodox_percent,	conservative_percent,	reform_percent,	otherjudaism_percent,	judaism_percent,	sunni_percent,	shi’a_percent,	ibadhi_percent,	nationofislam_percent,	alawite_percent,	ahmadiyya_percent,	otherislam_percent,	islam_percent,	mahayana_percent,	theravada_percent,	otherbuddhism_percent,	buddhism_percent,	zoroastrianism_percent,	hinduism_percent,	sikhism_percent,	shinto_percent,	baha’i_percent,	taoism_percent,	jainism_percent,	confucianism_percent,	syncretism_percent,	animism_percent,	noreligion_percent,	otherreligion_percent,	religion_sumpercent,	total_percent*: queste variabili sono le frequenze relative delle diverse religioni (includendo anche il numero totale di religiosi e di non religiosi). Tali variabili verranno eliminate e successivamente ricalcolate. 
+
+
+Le ultime due variabili non sono spiegate in quanto sono state create dal ricercatore che ha definito tale dataset per scopi interni, infatti nel sito non descrive la funzionalità di tali varibaili. Tale dataset è stato preso dal sito [Kaggle](https://www.kaggle.com), in particolare dalla pagina [link](https://www.kaggle.com/umichigan/world-religions) la quale a suo volta riprende il dataset dal "*World Religion Project*". Il World Religion Project ha lo scopo di fornire informazioni dettagliate sull'adesione religiosa in tutto il mondo dal 1945. Contiene dati sul numero di aderenti per religione in ciascuno degli stati del sistema internazionale per ogni periodo di mezzo decennio. 
+
+
+Il set di dati è stato creato da Zeev Maoz, University of California-Davis, e Errol Henderson, Pennsylvania State University, e pubblicato dal Correlates of War Project.
+
+
+Bisogna ammettere che il dataset include alcune discrepanze in quanto spesso la somma dei praticanti divisi per religiosità risulta non combaciare con il totale della popolazione. Questo avviene però solamente in alcuni casi che verranno mostrati successivamente.
+
+### 1.1.2 Happpiness
+
+L'Excel "WHR2018Chapter2OnlineData.xls" è stato preso dal sito [World Happiness Report](http://worldhappiness.report/ed/2018/), in particolae dal capitolo 2. Mentre le informazioni delle variabili sono state prese dall'appendice [Appendix1ofChapter2.pdf](https://s3.amazonaws.com/happiness-report/2018/Appendix1ofChapter2.pdf).
+Analizziamo ora le variabili che costituiscono tale dataset:
+
+* *country* : paese analizzato.
+
+* *year*: anno analizzato.
+
+* *Life Ladder*: Punteggio di felicità o benessere soggettivo. La misura dell'indagine è del 22 dicembre 2017 del Gallup World Poll (GWP), che copre gli anni dal 2005 al 2017. Salvo diversa indicazione, è la risposta media nazionale alla questione delle valutazioni della vita. La traduzione della formulazione inglese della domanda è "Immagina una scala, con gradini numerati da 0 in basso a 10 in alto. La parte superiore della scala rappresenta la migliore vita possibile per te e la parte inferiore della scala rappresenta la vita peggiore per te. Su quale passo della scala diresti di sentirti personalmente a tuo agio in questo momento?" Questa misura è anche indicata come scala di vita di Cantril o semplicemente scala di vita nella nostra analisi.
+
+* *Log GDP per capita*: rappresenta il logaritmo del PIL pro capite. A pochi paesi mancano i numeri del PIL, ma erano presenti nelle versioni precedenti. Si utilizzano i numeri della versione precedente, dopo aver regolato i loro livelli di un fattore di 1,17 per tenere conto delle variazioni dei prezzi impliciti, cioè tenendo conto della variazione del potere d'acquisto (PPP). 
+
+* *Social support* : è la media nazionale delle risposte binarie (0 o 1) alla domanda GWP "Se eri nei guai, hai parenti o amici su cui puoi contare per aiutarti quando ne hai bisogno, o no?".
+
+* *Healthy life expectancy at birth* : Le serie temporali dell'aspettativa di vita sana alla nascita sono calcolate dagli autori di tale report sulla base dei dati dell'Organizzazione mondiale della sanità (OMS), degli Indicatori di sviluppo mondiale (WDI) e delle statistiche pubblicate su articoli di riviste.
+
+* *Freedom to make life choices*:  è la media nazionale delle risposte alla domanda GWP "Sei soddisfatto o insoddisfatto della tua libertà di scegliere ciò che fai della tua vita?".
+
+* *Generosity* : La generosità è il residuo della regressione sulla media nazionale  della risposta alla domanda GWP "Hai donato soldi ad un ente di beneficenza nel mese scorso?" sul PIL pro capite.
+
+* *Perceptions of corruption* : La misura è la media nazionale dell'indagine che risponde a due domande nel GWP: "La corruzione è diffusa in tutto il governo o no?" e "La corruzione è diffusa all'interno delle imprese o no?" La percezione complessiva è solo la media delle due possibili risposte 0 e 1. Nel caso in cui manchi la percezione della corruzione governativa, usiamo la percezione della corruzione aziendale come la percezione generale. 
+
+* *Positive affect* : è definita come la media di tre misure di *Positive affect* nel GWP: felicità, risata e divertimento sulla linea del sondaggio Gallup World Poll. Queste misure sono le risposte alle seguenti tre domande, rispettivamente: "Hai provato i seguenti sentimenti durante il giorno (*A LOT OF DAY*)? Hai provato felicità? "," Hai sorriso o riso molto ieri? " e " Hai vissuto i seguenti sentimenti durante il giorno (*A LOT OF DAY*) di ieri? Hai provato divertimento?". 
+
+* *Negative affect* : l'incidenza negativa è definita come la media di tre misure GWP. Le domande utilizzate per tale indicatore "Hai provato i seguenti sentimenti durante la giornata di ieri (*A LOT OF DAY*)? Hai provato preoccupazione?", "Hai provato i seguenti sentimenti durantela giornata di ieri (*A LOT OF DAY*)? Hai provato tristezza? "  e "Hai provato i seguenti sentimenti durante la giornata di ieri (*A LOT OF DAY*)? Hai provato rabbia?".
+
+* *Confidence in national government*: anche in questo caso abbiamo una media delle risposte possibili (sempre 0 o 1) alla domanda: "Hai fiducia nel governo nazionale?”.
+
+* *Democratic Quality* : tale misura è basate sul progetto *Worldwide Governance Indicators* (*WGI*) (*Kaufmann*, *Kraay* e *Mastruzzi*) aggiornato nel 29 settembre 2017. Questo progetto definisce 6 indicatori, due dei quali sono utilizzati per analizzare la qualità della democrazia. 	
+
+* *Delivery Quality* : questo indicatore viene calcolato tramite le 4 variabili rimanenti del progetto *Worldwide Governance Indicators* (*WGI*). Questo indicatore stima la qualità dell'erogazione dei servizi per nazione.
+
+* *Standard deviation of ladder by country-year*, *Standard deviation/Mean of ladder by country-year*, *GINI index (World Bank estimate)*, *GINI index (World Bank estimate), average 2000-15*, *gini of household income reported in Gallup, by wp5-year*: per la definizione di tali varibaili si consiglia di andare al sito sopracitato, in modo tale da non perdere significato nella traduzione. Questa variabili in più non verranno utilizzate nell'analisi.
+
+Di tale file Excel verrà utilizzato anche il secondo foglio di lavoro che contiene alcune delle variabili principali del dataset appena presentato i cui valori però sono definiti in termini di quota parte della variabile `Life Ladder` spiegata da tali variabili.  
+
+### 1.1.3 Coordinate
+
+Nelle analisi verranno utilizzati due dataset per le coordinate dei paesi. Questi dataset sono stati creati appositamente per tali analisi in quanto i due dataset ne erano sprovvisti. Per la loro creazione si è utilizzato il comando "*mutate_geocode*",  del package "*ggmap*",  e il dataset preso da tale [sito](https://www.maxmind.com/en/free-world-cities-database). 
+Quindi sono stati creati due dataset:
+
+* *coordinate_Religion*: per i paesi del dataset delle religioni.
+
+* *coordinate_WHR*: per i paesi del dataset riguardante la felicità.
+
+### 1.1.4 Suicide
+
+Questo dataset e stato preso da questo [sito](http://apps.who.int/gho/data/node.home) e sarà utilizzato alla fine della relazione, svolgerà un ruolo cruciale nell'analisi sovvertendo tutti i ragionamenti. Esso sarà costuito da tre variabili principali: una riguardante l'anno di riferimo, una rigurardante il paese e l'ultima il tasso di suicidi su 100000 persone.
+
+
+1.2 Library
+------------------------------
+
+
+Si riportano qua sotto tutti i pacchetti che utilizzeremo nel corso dell'analisi.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(plotly)
+library(corrplot)
+library(readr)
+library(DT)
+library(gapminder)
+library(readxl)
+library(ggthemes)
+library(corrplot)
+library(knitr)
+library(countrycode)
+library(easyGgplot2)
+library(modelr)
+library(purrr)
+```
+
+
+1.3 Avvertenze
+----------------------------
+
+
+Tale analisi raccoglie una ampia molteplicità di dataset presi da svariati siti. Questo ci porterà a due principali problematiche
+
+1. Non tutti i paesi sono trasversalmente analizzati tra i dataset
+
+2. Non tutti i dataset utilizzano la medesima nomenclatura
+
+
+Per superare la seconda porblematica si è usato il pacchetto "*countrycode*" omogeneizzando i nomi con la nomenclatura ISO3.
+
+
+Iniziamo quindi ora l'analisi rispondendo alle domande.
+
+2. Come si è evoluta la religione nel mondo e negli anni?
+=======================================================
+
+Per rispondere e tale domanda utilizzeremo il dataset riguardante le religioni nel mondo:
+
+```{r}
+## Caricamento del dataset religion
+religion <- read_csv("database/Religio_national.csv")
+coordinate_Religion <- read_csv("database/coordinate_Religion.csv")
+head(names(religion), n = 7)
+tail(names(religion), n = 7)
+```
+
+
+Essendo l'elenco dei nomi delle variabili molto lungo si ha preferito mostrare una parte rappresentante di queste. Come notiamo questa tabella non è in formato tidy: abbiamo colonne che non sono variabili, ma valori/determinazioni di un'altra variabile. Una volta applicato il comando "*gather*" per risolvere il problema precedente,  separiamo la colonna religion in due colonne che chiamaremo "*religion*" e "*spec*". Questo perchè ci verrà comodo separe la famiglia della religione (cristiani, islamici, ebrei, ecc.) dalla sua specificità (protestanti, greco ortodossi, ecc.). Infine togliamo alcune variabili che sono superflue e ricalcoliamo le frequenze relative per ogni religione, paese e anno. 
+
+```{r}
+## Pulizia e creazione dataset religion_tidy
+religion_tidy <- religion %>%
+  select(-ends_with("percent"), -code, -dual_religion, -source_code)%>%
+  gather( 3:38, key = 'religion',value =  'frequency')%>%
+  separate(col = religion, into = c('religion','spec'),sep = "_", remove = T)%>%
+  mutate(freqrel = frequency / population)
+## Verifica vincolo di chiave primaria
+religion_tidy%>%
+  count(year, state, religion, spec)%>%
+  filter(n>1)
+```
+
+
+Sistemato quindi il nostro dataset conviene dargli una prima occhiata, andando a vedere se ci sono valori anomali:
+
+```{r}
+summary(religion_tidy)
+```
+
+
+Quello che notiamo è che la variabile "*freqrel*" ha alcuni valori maggiori di 1. Ciò non è possibile, quindi, essendo "*freqrel*" una variabile costruita a posteriori, per non perdere informazioni si porranno tali valori "NA".
+
+```{r}
+## Assegnazione valore NA a frequenze relative maggiori di 1
+religion_tidy$freqrel[religion_tidy$freqrel>1]<-NA
+```
+
+
+Ora bisogna controllare che la somma delle frequenze relative anno per anno sia pari a uno:
+
+```{r}
+## Tabella paesi con somma frequenze relative maggiori di 1
+religion_tidy%>%
+  group_by(year, state)%>%
+  filter(spec=="all", religion !="religion")%>%
+  summarise(somma=sum(freqrel))%>%
+  filter(somma>1)%>%
+  ungroup()%>%
+  distinct(state)%>%
+  kable()
+```
+
+
+Notiamo che questo non avviene. Per fortuna avviene in pochi paesi e il più di questi risultano essere piccoli paesi dove la determinazione del numero dei fedeli risulta essere logicamente più difficile da calcolare. Per questo motivo spesso filtreremo i dati per frequenza relativa maggiore di 0.3 in modo tale da considerare solo le religioni più praticate o 0.5 per determinare la religione più praticata. 
+
+
+Pulito e preparato il dataset possiamo andare a rispondere alla domanda di tale capitolo. Iniziamo analizzando la frequenze dei religiosi contro gli anni:
+
+```{r}
+## Trend numero di religiosi per stato
+a<-religion_tidy%>%
+  filter(spec=="all", religion !="noreligion", religion != "religion", freqrel>0.3)%>%
+  group_by(year, state)%>%
+  summarise(sum = sum(frequency))%>%
+  ggplot(mapping = aes(x = year, y = sum))+
+  geom_line(aes(col = state))+
+  labs(title = "Andamento numero di religiosi",  y = "Numero di religiosi per stato", x = "Anno", colour = "Stato")+
+  theme_minimal()+
+  theme(axis.text.y = element_blank())+
+  scale_x_discrete(limits = religion_tidy$year)
+ggplotly(a, width = 900, height = 600)
+```
+
+
+Si nota un comune andamento costante, a parte per la Cina e per l'India. Questo grafico risulta essere poco rappresentativo se non confrontato con l'incremento della popolazione come vedremo nel prossimo grafico:
+
+```{r}
+## Trend popolazioni per stato
+b<-religion_tidy%>%
+  filter(religion == "religion")%>%
+  ggplot(mapping = aes(x = year, y = population))+
+  geom_line(aes(col = state))+
+  labs(title = "Andamento della popolazione per stato",  y = "Popolazione", x = "Anno", colour = "Stato")+
+  theme_minimal()+
+  theme(axis.text.y = element_blank())+
+  scale_x_discrete(limits = religion_tidy$year)
+ggplotly(b, width = 900, height = 600)
+```
+
+
+Tale grafico ci dimostra come un naturale aumento dei fedeli, sia dato dall'aumento della popolazione. 
+
+Un fattore che può confermare l'idea per la quale la Cina e l'India si discostino dal comune andamento è l'analisi dei residui. Ipotizando ora che l'andamento del numero dei religiosi contro l'anno sia rappresentato da un retta di regressione possiamo graficare i residui in modo tale da verificare quale paese si discosta dal comune andamento.
+
+```{r}
+## Grafico residui per paese
+country_model = function(df){
+  lm(frequency~year, data = df)
+}
+
+by_country <- religion_tidy%>%
+  filter(spec=="all", religion !="noreligion", religion != "religion", freqrel>0.3)%>%
+  group_by(state)%>%
+  nest()%>%
+  mutate(model = map(data, country_model))%>%
+  mutate(resids = map2(data, model, add_residuals))
+
+models<-map(by_country$data, country_model)
+
+resids<-unnest(by_country, resids)
+
+a<-resids%>%
+  ggplot(aes(year, resid))+
+  geom_line(aes(col=state), alpha = 0.3, show.legend = FALSE)+
+  geom_smooth(se = F)+
+  labs(title = "Distribuzione dei residui per stato", x = "Anno", y ="Residui")+
+  theme_minimal()+
+  scale_x_discrete(limits = religion_tidy$year)
+ggplotly(a, width = 900, height = 600)
+```
+
+
+Quest'ultimo grafico ci conferma la precednete tesi per la quale la Cina e l'India sono due osservazioni anomale. D'altra parte anche il Pakistan da tale grafico risulta essere un outlier, questo perchè la popolazione è diminuita di molto tra gli anni 1970 e 1980 probabilmente a causa delle vicende inerenti la conquista dell'indipendenza.  
+
+Ciò nonostante è interessante focalizzarci sul trend delle popolazione e dei fedeli in India e in Cina, poiché questi due paesi mostrano due caratteri molto differenti:
+
+```{r}
+## Confronto trend popolazioni e numero di religiosi in Cina e in India
+c<-religion_tidy%>%
+  filter(spec=="all", religion !="noreligion", religion != "religion", freqrel>0.3, state == c ("China", "India"))%>%
+  group_by(year, state)%>%
+  summarise(sum = sum(frequency))%>%
+  ggplot(mapping = aes(x = year, y = sum))+
+  geom_line(aes(col = state, linetype = "religione"), show.legend = F)+
+  geom_line(data = filter(religion_tidy, state ==c("China", "India")), mapping = aes(x = year, y = population, col = state, linetype = "popolazione" ), show.legend = T)+
+  labs(title="Andamento popolazione vs numero di religiosi in Cina e in India", x = "Anno", y = "Popolazione e Religiosi", colour = "", linetype = "")+
+  theme_minimal()+
+  theme(axis.text.y = element_blank())+
+  scale_x_discrete(limits = religion_tidy$year)
+ggplotly(c, width = 900, height = 600)
+```
+
+
+La differenza sostanziale è che in Cina c'è un forte aumento dell'ateismo e differenza dell'India, la quale mostra un tred praticmanente identico tra popolazione e numero di religiosi.
+
+
+Andiamo ora ad analizzare il trend del numero dei "non religiosi":
+
+```{r}
+## Trend numero non religiosi per stato
+d<-religion_tidy%>%
+  filter(religion == "noreligion")%>%
+  ggplot(mapping = aes(x = year, y = frequency))+
+  geom_line(aes(col = state))+
+  labs(title="Andamento non religiosi per stato", x = "Anno", y = "Non religiosi", colour = "Stato")+
+  theme_minimal()+
+  theme(axis.text.y = element_blank())+
+  scale_x_discrete(limits = religion_tidy$year)
+ggplotly(d, width = 900, height = 600)
+```
+
+
+Come si può notare, il numero di non religiosi in Cina come previsto è di molto aumentato. Un altro trend interessante è quello della Russia, questo è dato da una forte diminuzione delle popolazione tra gli anni 1990 e 2000. Se si è interessati alla motivazione di tale evento si consiglia la pagina di [wikipedia](https://it.wikipedia.org/wiki/Demografia_della_Russia)
+
+
+Risulta ora interessante andare ad analizzare l'andamento del rapporto tra credenti e non credenti negli stati che graficamente hanno dimostrato un andamento "particolare":
+
+```{r}
+## Numero di non religiosi e di fedeli in Cina
+e<-religion_tidy%>%
+  filter((freqrel > 0.2 | religion == "noreligion") & religion != "religion", state == "China", spec == "all")%>%
+  ggplot(mapping=aes(x = religion, y = freqrel, fill = religion))+
+  geom_col()+
+  facet_wrap(~year)+
+  labs(title="Numero di non religiosi vs numero fedeli in Cina", x = "", y = "Frequenza", fill = "Religione")+
+  theme_minimal()+
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+ggplotly(e, width = 800, height = 600)
+
+## Numero di non religiosi e di fedeli in India
+f<-religion_tidy%>%
+  filter((freqrel > 0.2 | religion == "noreligion") & religion != "religion", state == "India", spec =="all")%>%
+  ggplot(mapping=aes(x = religion, y = freqrel, fill = religion))+
+  geom_col()+
+  facet_wrap(~year)+
+  labs(title="Numero di non religiosi vs numero fedeli in India", x = "", y = "Frequenza", fill = "Religione")+
+  theme_minimal()+
+  theme(axis.text.x  = element_blank(),
+        axis.ticks = element_blank())
+ggplotly(f, width = 800, height = 600)
+
+## Numero di non religiosi e di fedeli in Russia
+g<-religion_tidy%>%
+  filter((freqrel > 0.2 | religion == "noreligion") & religion != "religion", spec == "all", state == "Russia")%>%
+  ggplot(mapping=aes(x = religion, y = freqrel, fill = religion))+
+  geom_col()+
+  facet_wrap(~year)+
+labs(title="Numero di non religiosi vs numero fedeli in Russia", x = "", y = "Frequenza", fill = "Religione")+
+  theme_minimal()+
+  theme(axis.text.x  = element_blank(),
+        axis.ticks = element_blank())
+ggplotly(g, width = 800, height = 600)
+```
+
+
+Ora, per avere una visuale complessiva del globo si grafica il movimento dei fedeli delle diverse religioni negli anni. Vediamo quindi come le religioni si sono evolute nel mondo. Per ogni stato prenderemo solo quelle religioni che hanno un *freqrel*>0.5 in modo tale da prendere solo la religione o la "non religione" più praticata. Il secondo grafico è stato messo in quanto risulta essere più interessante a colpo d'occhio per capire tale fenomeno.
+
+
+Ci serve però anche caricare il dataset contenente le coordinate degli stati inclusi in *religion_tidy* e verifichiamo che tutti i paesi abbiano le corrispondenti coordinate:
+
+```{r, message=F, warning=F}
+## Caricamento dataset delle coordinate per religion_tidy
+coordinate_Religion <- read_csv("database/coordinate_Religion.csv")
+religion_tidy%>%
+  anti_join(coordinate_Religion, by = "state")
+
+## Mappa delle religioni
+h<-religion_tidy%>%
+  filter(freqrel>0.5, religion != "religion", spec == "all")%>%
+  left_join(coordinate_Religion, by = "state")%>%
+  ggplot(aes(long, lat, col = religion, size = freqrel, frame = year, label=state)) +
+  borders("world") +
+  geom_point(na.rm = T, alpha =.98) +
+  coord_quickmap()+
+  theme_minimal()+
+labs(title="Mappa delle religioni", x = "", y = "", colour = "Religione", size ="")
+ggplotly(h, width = 900, height = 600)%>%animation_opts(transition = 0, redraw = F)
+
+## Si elimina la cartina sottostante per comprendere meglio il trend
+i<-religion_tidy%>%
+  filter(freqrel>0.5, religion != "religion", spec == "all")%>%
+  left_join(coordinate_Religion, by = "state")%>%
+  ggplot(aes(long, lat, col = religion, size = freqrel, frame = year, label=state)) +
+  geom_point(na.rm = T, alpha =.7) +
+  coord_quickmap()+
+    theme_minimal()+
+labs(title="Mappa delle religioni", x = "", y = "", colour = "Religione", size ="")
+ggplotly(i, width = 800, height = 600)%>%animation_opts(easing = "elastic", frame =1000, mode = "next", redraw = F)%>%animation_slider()
+```
+
+
+Quello che notiamo nei grafici precedenti è una forte ascesa di tre principali religioni: cristianesimo, islamismo, buddhismo. In realtà andando ad analizzare le frequenze relative si nota un quasi costante andamento di tutte le religioni (eccetto per il sincretismo, l'anismo e l'ateismo). Infatti nel prossimo grafico si vede come le proporzioni di credenti nelle varie religioni è praticamente uguale negli anni: 
+
+```{r, message=FALSE, warning=FALSE}
+## Trend frequenze relative per religioni
+l<-religion_tidy%>%
+  filter(religion!="taoism",freqrel>0.3, religion != "religion", spec =="all", !is.na(frequency))%>%
+  group_by(year, religion)%>%
+  summarise(somma = sum(frequency)/sum(as.numeric(population)))%>%
+  ggplot(mapping=aes(x=year, y = somma, fill = religion))+
+           geom_col()+
+  facet_wrap(~religion)+
+  theme(axis.ticks.y = element_blank())+
+  theme_minimal()+
+  labs(title="Andamento frequenze relative religioni", x ="Anno", y = "frequenza", colour = "Religion")
+ggplotly(l, width = 800, height = 500) %>% hide_legend()
+```
+
+
+Visto tale trend, possiamo ora ipotizzare che nelle prossime analisi la religione più praticata nei diversi stati sia quella più praticata nell'ultimo anno disponibile in questa dataset, come visto nel dataset *religion_tidy*.
+
+
+3. La religione incide sula felicità? Quale religione rende più felici? Essere religiosi rende le persone più felici?
+===================================================
+
+
+Carichiamo il dataset riguardante i dati sulla felicità e il dataset delle sue coordinate:
+
+```{r}
+## Caricamento dataset happiness
+happiness <- read_excel("database/WHR2018Chapter2OnlineData.xls")
+coordinate_WHR <- read_csv("database/coordinate_WHR.csv")
+```
+
+Verifichiamo il vincolo di chiave primaria e aggiungiamo la variabile rank per tenere conto della posizione nella classifica annuale:
+
+```{r}
+## Creazione variabile rank
+happiness<-happiness%>%
+  group_by(year)%>%
+  mutate(rank=rank(-`Life Ladder`))%>%
+  select(rank, everything())
+
+## Verifica vincolo chiave primaria
+happiness%>%
+  count(year, country)%>%
+filter(n>1)
+```
+
+
+
+Omogeneizziamo i nomi dei paesi.
+
+```{r, error = TRUE}
+## Impostazione dei codici nomi paesi
+happiness<-happiness%>%
+  mutate(code=countrycode(country,origin = "country.name", dest ="iso3c"))
+
+religion_tidy<-religion_tidy%>%
+  mutate(code = countrycode(state, origin = "country.name", dest = "iso3c"))
+```
+
+
+Vediamo ora tre grafici. Uno rapresenta il valore medio della felicità raggruppato per religione al variare dell'anno. Il secondo mostra i boxplot della variabile "*Life Ladder*" di ogni religione. Il terzo grafico evidenza la differenza tra la media della felicità tra i credenti e i non credenti.
+
+```{r, error = TRUE}
+## Grafico andamento della felicità media per religione
+a<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(code, religion)%>%
+  right_join(happiness, by = 'code')%>%
+  filter(!is.na(religion))%>%
+  group_by(religion, year)%>%
+  summarise(avg=mean(`Life Ladder`, na.rm = T))%>%
+  ggplot(mapping = aes(x=year, y = avg, col = religion))+
+  geom_point(position = "jitter", show.legend = F)+
+  geom_smooth(se = F)+
+  theme_minimal()+
+  labs(title = "Andamento felicità media per religione", x = "Anno", y = "Felicità media", colour = "Religione")
+ggplotly(a, width = 800, height = 500)
+
+## Grafico boxplot felicità per religione
+b<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(code, religion)%>%
+  right_join(happiness, by = 'code')%>%
+  filter(!is.na(religion))%>%
+  ggplot(mapping = aes(x = religion, y = `Life Ladder`,  col = religion))+
+  geom_point(position = "jitter", alpha = 0.1, col="grey")+
+  geom_boxplot(show.legend = F)+
+  theme_minimal()+
+  labs(title="Boxplot per religione", x = "", y = "Felicità", colour = "Religione")+
+  theme(axis.text.x = element_blank())
+ggplotly(b, tooltip = NULL, width = 800, height = 500)
+
+## Grafico anamento felicità media per religiosi e non religiosi
+nr<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(code, religion)%>%
+  right_join(happiness, by = "code")%>%
+  group_by(religion, year)%>%
+  filter(religion=="noreligion")%>%
+  summarise(avg = mean(`Life Ladder`))
+
+r<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(religion, code)%>%
+  inner_join(happiness, by = "code")%>%
+  filter(religion!= c("noreligion"))%>%
+  group_by(year)%>%
+  summarise(avg = mean(`Life Ladder`))%>%
+  mutate(religion = "religoius")
+
+c<-ggplot()+
+  geom_point(data = nr, mapping = aes(x = year, y = avg, col = "Non religiosi"), na.rm = T)+
+  geom_smooth()+
+  geom_point(data = r, mapping = aes(x = year, y = avg, col = "Religiosi"), na.rm = T)+
+  geom_smooth()+
+  theme_minimal()+
+  labs(title = "Andamento felicità media religiosi vs non religiosi", x = "Anno", y = "Felicità media", colour = "")+theme_minimal()+
+  scale_x_discrete(limits = happiness$year)
+ggplotly(c, width = 800, height = 500)
+```
+
+
+Questi dati ci consentono di dire che osservando la felicità delle diverse religioni negli anni essa non è variata in maniera eccessiva (a parte per i paesi buddhisti), mentre c'è una qualche differenza tra le diverse religioni. In più il terzo grafico ci indica il fatto che i paesi non religiosi sembrano essere più felici. 
+
+
+4. Cos'altro potrebbe incidere sulla felicità?
+=======================
+
+
+Diamo una prima occhiata al dataset per vedere se ci sono dei valori anomali.
+
+```{r}
+str(happiness)
+summary(happiness)
+```
+
+
+Non essendoci valori anomali possiamo analizzare un aspetto molto interessante: guardando la distribuzione empirica di densità, c'è una normalizzazione di tale curva. Questo fattore ci consente di dire che la felicità inizialmente si distribuiva in maniera impari tra gli stati e successivamente tutti i paesi si sono "conformati" alla media.
+
+```{r}
+## Grafico densità empirica della scala di felicità
+a<-ggplot(data = happiness, mapping = aes(x =  `Life Ladder`, group = year, frame = year, col = as.factor(year)))+
+  geom_density()+
+  theme_minimal()+
+  labs(title = "Densità empirica felicità (Life Ladder)", y = "Densità empirica", x="Felicità (Life Ladder)")
+ggplotly(a, width = 900, height = 500)%>%animation_opts(frame = 2000, easing = "sin", mode = "afterall")%>%layout(showlegend = F)
+```
+
+
+Vediamo ora come è disribuita la felicità nel mondo. Nel secondo grafico si è voluto creare tre classi: "*very happy*", "*happy*" e "*unhappy*" per rendere più chiaro il posizionamento dei paesi con valore nella scala della felicità rispettivamente maggiori di 7, compresi tra 5 e 7, e minori di 5. 
+
+```{r}
+## Grafico della mappa della felicità
+b<-happiness%>%
+  left_join(coordinate_WHR,  by = "country")%>%
+  ggplot(aes(LONG, LAT,  col = `Life Ladder`, frame = year, label = country, group = country)) +
+  borders("world") +
+  geom_point(na.rm = T, size =3) +
+  coord_quickmap()+
+scale_colour_gradient(low = "goldenrod4", high = "olivedrab2")+
+  theme_minimal()+
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())+
+  labs(title = "Mappa felicità paesi", x = "", y ="", color = "Felicità (LIfe Ladder)")
+ggplotly(b, width = 900, height = 500)%>%animation_opts(transition = 0, redraw = F)
+
+## Grafico della mappa della felicità suddivisa in tre livelli
+c<-happiness%>%
+  mutate(levelofhappiness = ifelse(`Life Ladder`>=7, "1. very happy", ifelse(`Life Ladder`>=5, "2. happy", "3. unhappy")))%>%
+  left_join(coordinate_WHR,  by = "country")%>%
+ggplot(aes(LONG, LAT,  col = levelofhappiness, frame = year, label = country, group = country)) +
+  borders("world") +
+  geom_point(na.rm = T, size =3) +
+  coord_quickmap()+
+  theme_minimal()+
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())+
+  labs(title = "Mappa livelli di felicità paesi", x="", y = "", colour = "Livelli di felicità")
+ggplotly(c, width = 900, height = 500)%>%animation_opts(easing = "elastic", frame =1000, mode = "next", redraw = F)%>%animation_slider()
+```
+
+
+Dai grafici precedenti possiamo desumere che la felicità dei diversi paesi non è cambiata molto, nel senso che secondo la classificazione "*very happy*", "*happy*" e "*unhappy*", la distribuzione nel mondo non sembra variare. 
+
+
+Vediamo ora da dove deriva la felicità. Per analizzare la correlazione eliminiamo le variabili con poco interesse pratico in modo tale da non appesantire il grafico
+
+```{r, error = TRUE}
+## Grafico delle correlazioni tra le variabili del dataset happiness
+happinessnumber<-happiness%>%
+  select(-country, -code,-`Standard deviation of ladder by country-year`, -`Standard deviation/Mean of ladder by country-year`,
+         -`GINI index (World Bank estimate)`, -`GINI index (World Bank estimate), average 2000-15`, 
+         - `gini of household income reported in Gallup, by wp5-year`)
+M <- cor(happinessnumber, use = "complete.obs")
+
+corrplot(M, type = "upper", tl.pos = "td",
+         method = "circle", tl.cex = 0.5, tl.col = 'black',
+          order = "hclust", diag = FALSE, tl.srt = 45, title = "Correlazioni variabili happiness dataset", mar=c(0,0,1,0)) 
+```
+
+
+Quello che notiamo da questo grafico, focalizzandosi sulla correlazione delle varibaili con la sola variabile "Life Ladder", è che la felicità è fortemente correlata con il supporto sociale, il logaritmo del PIL pro capite, l'aspettativa di vita, la qualità della democrazia, la libertà di far scelte e l'influenza positiva. Infatti se ora andiamo a vedere lo scatter plot possiamo vedere come si possa creare facilmente una funzione di regressione che può esser utilizzata nella previsione della felicità. 
+Detto ciò è interessante notare l'incorrelazione con gli anni, questo vuol dire che con il crescere del tempo la felicità né cresce né decresce.
+
+```{r}
+## Due scatterplot della felicità (Life Ladder) contro il Log del PIl pro capite
+## colorati in base all'aspettativa di vita e al supporto sociale
+d<-happiness%>%
+  ggplot(mapping = aes(x = `Log GDP per capita`, y = `Life Ladder`, col = `Healthy life expectancy at birth`))+
+  geom_point(na.rm=T)+
+  geom_smooth(se = F, method = "lm", na.rm = T)+
+  theme_minimal()+
+  theme(axis.text.x = element_blank())+
+  labs(title="Scatter plot PIL pro capitle vs Life Ladder", x="", colour = "Aspettativa di vita")
+
+e<-happiness%>%
+  ggplot(mapping = aes(x = `Log GDP per capita`, y = `Life Ladder`, col = `Social support`))+
+  geom_point(na.rm=T)+
+  geom_smooth(se = F, method = "lm", na.rm = T)+
+  theme_minimal()+
+  labs(colour = "Supporto sociale", x ="Log PIL pro capite")
+ggplot2.multiplot(d,e, cols =1, align = T)
+```
+
+
+Quindi potremmo dire che dall'analisi risulta che la felicità derivi principalmente da 4 elementi: supporto sociale, situazione economica, salute e libertà di prendere decisioni.
+
+
+Prendendo il secondo foglio di lavoro dell'*Excel* da cui abbiamo caricato questi dati, possiamo vedere quali variabili incidono di più sulla felicità. Nel sito sopraindicato, dal quale sono stati presi questi dati, è indicata la metodologia di calcolo della "quantità della scala di felicità spiegata" da ogni variabile.
+
+```{r}
+## Caricamento dataset happiness_explained
+happiness_explained <- read_excel("database/WHR2018Chapter2OnlineData.xls", 
+     sheet = "Figure2.2", col_types = c("text", 
+         "numeric", "blank", "blank", "blank", 
+         "numeric", "numeric", "numeric", 
+         "numeric", "numeric", "numeric", 
+         "blank", "blank", "blank", "blank", 
+         "blank", "blank", "blank", "blank", 
+         "blank", "blank", "blank", "blank", 
+         "blank"))
+
+## Rank felicità
+happiness_explained<-happiness_explained%>%
+  mutate(rank=rank(-`Happiness score`))%>%
+  select(rank, everything())
+
+## Verifica vincolo chiave primaria
+happiness_explained%>%
+  count(Country)%>%
+  filter(n>1)
+
+## Grafico a torta per le variabili che contrubuiscono a Life Ladder
+happiness_explained%>%
+  gather(starts_with("Explained"), key=explained, value = value)%>%
+  group_by(explained)%>%
+  summarise(sum=sum(value, na.rm = T))%>%
+  ggplot(mapping=aes(x = explained, y = sum, fill= explained))+
+  geom_col()+
+  coord_polar()+
+  theme_minimal()+
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())+
+  labs(title="Felicità spiegata dalle variabili nel 2017", x = "", y ="", fill="")
+
+## Grafico a torta per le variabili che contrubuiscono a Life Ladder in Italia
+happiness_explained%>%
+  gather(starts_with("Explained"), key=explained, value = value)%>%
+  group_by(explained)%>%
+  filter(Country=="Italy")%>%
+  ggplot(mapping=aes(x = explained, y = value, fill= explained))+
+  geom_col()+
+  coord_polar()+
+  theme_minimal()+
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())+
+  labs(title="Felicità spiegata dalle variabili \n in Italia nel 2017", x = "", y ="", fill="")
+```
+
+
+Quindi quello che incide di più sulla scala di felicità è il supporto sociale, poi la situazione economica, la salute e poi tutto il resto.
+
+
+Ma la felicità deriva veramente da tali elementi? Par sensato andare a vedere se questa scala di felicità è correlata con il numero di suicidi.
+
+
+
+5. Felicità e Suicidio: sono variabili dipendenti? E suicidio con religione?
+================================
+
+
+Se la felicità definita in questo dataset avesse l'accezione comune di felicità, allora dovrebbe risultare che la scala di felicità sia correlata con il numero di suicidi nel mondo. A questo proposito quindi carichiamo e puliamo l'ultimo dataset:
+
+```{r}
+## Caricamento e pulizia dataset suicide
+suicide <- read_csv("database/suicide.csv", skip = 1)
+
+suicide<-suicide%>%
+  gather(c(3:7), key = "year", value = "suiciderate")%>%
+  filter(Sex == "Both sexes")%>%
+  select(-Sex)%>%
+  mutate(code = countrycode(Country, origin = "country.name", dest = "iso3c"))
+suicide$year<-as.integer(suicide$year)
+```
+
+
+```{r, error = TRUE}
+## Grafico di correlazioni tra variabili del dataset happiness e suiciderate
+M <- suicide%>%
+  inner_join(select(happiness, -country), by = c ("code", "year"))%>%
+  select(-Country, -code, -`Standard deviation of ladder by country-year`, -`Standard deviation/Mean of ladder by country-year`,
+         -`GINI index (World Bank estimate)`, -`GINI index (World Bank estimate), average 2000-15`, 
+         - `gini of household income reported in Gallup, by wp5-year`)%>%
+ cor(use = "complete.obs")
+
+corrplot(M, type = "upper", tl.pos = "td",
+         method = "circle", tl.cex = 0.4, tl.col = 'black',
+         order = "hclust", diag = FALSE, tl.srt = 45, title = "Correlazioni variabili happiness dataset e suicide rate", mar=c(0,0,1,0)) 
+```
+
+
+Sembra che la scala di felicità sia fortemente incorrelata con il numero di suicidi. Tali risultati verranno commentati nell'ultimo capitolo. Concludiamo questo capitolo andando a vedere se il tasso medio di suicidio varia tra religiosi e non.
+
+```{r, error=TRUE}
+## Andamento nuomero tasso medio di suicidi di religiosi e non religiosi
+nr<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(code, religion)%>%
+  right_join(suicide, by = "code")%>%
+  filter(religion=="noreligion")%>%
+  group_by(religion, year)%>%
+  summarise(avg = mean(suiciderate))
+
+r<-religion_tidy%>%
+  filter(freqrel>0.5, religion !="religion", spec =="all", year ==2010)%>%
+  select(religion, code)%>%
+  inner_join(suicide, by = "code")%>%
+  filter(religion!= c("noreligion"))%>%
+  group_by(year)%>%
+  summarise(avg = mean(suiciderate))%>%
+  mutate(religion = "religoius")
+  
+a<-ggplot()+
+  geom_point(data = nr, mapping = aes(x = year, y = avg, col = "Non religiosi"))+
+  geom_smooth(se=F)+
+  geom_point(data = r, mapping = aes(x = year, y = avg, col = "Religiosi"))+
+  geom_smooth(se = F)+
+  theme_minimal()+
+  labs(title="Tasso medio di morte per suicidio \n religiosi vs non religiosi",x = "Anno", y ="Tasso medio di morte per suicidio", colour ="")+
+  scale_x_discrete(limits = suicide$year)
+ggplotly(a, width = 900, height = 500)
+```
+
+
+
+
+6. Conclusioni
+=====================================================
+L'ultima parte di questa analisi è cruciale: l'incorrelazione tra le variabili "*suiciderate*" e "*Life Ladder*" ci consente di dire che non possiamo definire la felicità secondo questa scala. Se definissimo la felicità secondo la scala così creata entreremmo in un paradosso in cui diciamo che "chiunque si suicida non è detto che sia triste, ma potrebbe esser contento". Comprendiamo il poco senso di tale affermazione. 
+
+Ancora più interessante è notare come se definissimo la felicità tramite le variabili supporto sociale, PIL pro capite (quindi ricchezza), salute, ecc., potremmo trovare una felicità che non ha nulla a che fare con la *vera* felicità, in quanto risulta essere incorrelata con il numero di suicidi. Quindi non possiamo cercare in questi elementi la felicità, ma dobbiamo cercarla da un’altra parte. Ogni persona cerca di sistemarsi e di trovare il proprio posto nella vita tramite una bella casa, un buon lavoro, una famiglia, ecc.. Ma sono questi i posti dove cercare la felicità? Purtroppo o per fortuna tale relazione non ha trovato risposta a tale domanda. Penso che ognuno di noi prima o poi trovi il modo per essere felice. 
+
+
+Secondo il padre della psicologia positiva Martin Selingman, il 60 per cento della felicità è determinata dai nostri geni e dall’ambiente, il restante 40 per cento dipende da noi.
+
+
+> Tutti gli esseri umani vogliono essere felici; peraltro, per poter raggiungere una tale condizione, bisogna cominciare col capire che cosa si intende per felicità. - (Jean-Jacques Rousseau)
+
+
+Personalmente credo che la felicità non debba esser ricercata in cose materiali che svaniscono o possono svanire in poco tempo. A questo riguardo concludiamo con la celebre frase di Christopher McCandless:
+
+>La felicità è reale solo se condivisa - *Into The Wild*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Andrea Pesce
